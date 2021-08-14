@@ -1,0 +1,69 @@
+---
+title: "us_tilapia_imports"
+author: "Julia Parish"
+date: "8/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+library(janitor)
+
+```
+
+## **Task 2: Wild data** - annual total volumes (in thousands of pounds) of tilapia imports 
+# For Task 2, you will work with the us_tilapia_imports.csv. It exists in your eds221-day5-comp project - copy that file into your data folder for your day 5 activities project. 
+- You can decide if you want to do this all in separate steps, or piped together in sequence, or some combination. Make sure if you pipe things together, you check the output at every step.
+- Create a new .Rmd in your docs folder called us_tilapia_imports.Rmd
+- Attach the tidyverse, here and janitor packages
+- Read in the data as us_tilapia_imports
+- Explore the data. What are the classes of the columns? Remember some tools we’ve used: summary, names, dim, skim, etc.
+
+```{r}
+us_tilapia_imports <- read_csv(here::here("data", "us_tilapia_imports.csv" ))
+
+skimr::skim(us_tilapia_imports)
+
+# names gives you the column names
+names(us_tilapia_imports)
+
+# $ means column - if you want to get unique values in a column
+unique(us_tilapia_imports$country)
+
+summary(us_tilapia_imports)
+
+# dim gets you number of columns then rows
+dim(us_tilapia_imports)
+
+```
+# Use pivot_longer() to reshape the data into long format (currently, the variable “year” is spread across multiple columns). Remember to store the output so you will be able to use the reshaped data this creates. *pivot_longer() "lengthens" data, increasing the number of rows and decreasing the number of columns. The inverse transformation is pivot_wider()* **make sure to save it something (ex: us_tilapia_db)**
+- Check the class of the year column. What is it, and why do you think that’s the case? Then, coerce the year column to numeric (e.g. using mutate() and as.numeric() in combination)
+- Use dplyr::group_by() %>% summarize() to find the total US tilapia imports by year, store as yearly_tilapia_tot
+
+
+```{r}
+us_tilapia_db <- us_tilapia_imports %>% 
+  pivot_longer(!country, names_to = "year", values_to = "vol_thousand_lbs") %>% 
+  mutate(year = as.numeric(year))
+
+# current class of year in db is character
+class(us_tilapia_db$year)
+
+# mutate creates a new column bc we need to replace current year, I am making a new column called year. Once you check using a default 'df' then copy and paste into us_tilapia_db
+
+df <- us_tilapia_db %>% mutate(year = as.numeric(year))
+
+class(df$year)
+```
+# Use dplyr::group_by() %>% summarize() to find the total US tilapia imports by year, store as yearly_tilapia_tot
+
+```{r}
+yearly_tilapia_tot <- us_tilapia_db %>% 
+  group_by(year) %>% 
+  summarize(vol_thousand_lbs = sum(vol_thousand_lbs, na.rm = TRUE))
+
+```
+
