@@ -30,8 +30,32 @@ source(here("src", "storm_runoff.R"))
 ```{r}
 imperv_frac <- seq(from = 0.6, to = 0.8, by = 0.01)
   
-water_volume <- predict_runoff(i = imperv_frac, a = 182)  
+runoff_volume <- predict_runoff(i = imperv_frac, a = 182)  
 
-water_volume
+runoff_volume
+
+# Bind your sequence of impervious fractions together with the resulting runoff volume calculated into a data frame
+
+watershed_runoff <- data.frame(impervious_f = imperv_frac, runoff = runoff_volume)
+
+
+```
+# Create a ggplot graph that has both dots and connecting lines (i.e., you’ll layer geom_point() and geom_line(). Update axis labels. Export a png of your graph to the figs folder using ggsave.
+
+```{r}
+w_runoff_plot <- ggplot(data = watershed_runoff,
+                        aes(x = impervious_f, y = runoff_volume)) +
+                geom_point(aes(size = impervious_f, color = runoff_volume)) + 
+                geom_line() +
+                labs(title = "Watershed Runoff Estimates", x = "Impervious Area" , y = "Volume of Runoff cu.ft") +
+  scale_color_gradient(low = "red", high = "yellow")
+  
+w_runoff_plot
+
+# Export a png of your graph to the figs folder using ggsave
+
+ggsave(here::here("figs", "watershed_runoff.png"), 
+       height = 6, width = 6)
+
 ```
 

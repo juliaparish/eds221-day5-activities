@@ -66,4 +66,28 @@ yearly_tilapia_tot <- us_tilapia_db %>%
   summarize(vol_thousand_lbs = sum(vol_thousand_lbs, na.rm = TRUE))
 
 ```
+# # Create a subset that only retains imports from Ecuador, Honduras, Costa Rica, and Mexico (you decide what to name this)
+- Create a ggplot graph of total US tilapia imports over time, for those four countries in the subset you created above, separated by country. Update axis labels, add a title, customize your color scheme, update the theme. Export a .jpg of your graph to figs.
+
+```{r}
+
+crhem_subset <- us_tilapia_db %>% 
+  filter(country %in% c("Ecuador", "Honduras", "Costa Rica", "Mexico"))
+  
+crhem_plot <- ggplot(data = crhem_subset,
+                      aes(x = year, y = vol_thousand_lbs, na.rm = TRUE)) + 
+              geom_line(color = "salmon") +
+              facet_wrap(~country) +
+              labs(title = "Tilapia Imports from Central America and Ecuador", x = "Year", y = "Thousands of Pounds") +
+              theme_bw()
+  
+crhem_plot
+
+ggsave(here::here("figs", "tilapia_imports_subset.jpg"),
+       height = 7, width = 8)
+
+
+```
+
+
 
